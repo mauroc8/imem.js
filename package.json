@@ -8,6 +8,6 @@
   },
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build -d docs --public-url=/ src/index.html"
+    "build": "parcel build -d docs --public-url=. src/index.html"
   }
 }
