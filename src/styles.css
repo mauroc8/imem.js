@@ -1,0 +1,20 @@
+
+html {
+    font-family: sans-serif;
+}
+
+#rom-size-output,
+#code-output {
+    color: darkblue;
+}
+
+pre:has(#code-output) {
+    border: 1px solid lightgray;
+    padding: 24px;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}

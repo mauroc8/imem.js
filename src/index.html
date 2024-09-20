@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>imem.js</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="index.ts"></script>
+    </head>
+    <body>
+        <h1>imem.js</h1>
+        <main>
+            <div>
+                <div>Código:</div>
+                <textarea
+                    id="code-input"
+                    placeholder="loop: CBZ XZR, loop"
+                    cols="50"
+                    rows="18"
+                    spellcheck="false"
+                ></textarea>
+                <div>Vector de excepciones (opcional):</div>
+                <textarea
+                    id="isr-input"
+                    placeholder=""
+                    cols="50"
+                    rows="8"
+                    spellcheck="false"
+                ></textarea>
+            </div>
+            <div>
+                <div style="display: flex">
+                    <span style="flex-grow: 1">
+                        Salida:
+                    </span>
+                    <button id="copy-output-button">Copiar</button>
+                </div>
+                <pre id="output">
+`define ROM_SIZE <span id="rom-size-output">1</span>
+
+module imem #(parameter N=32)
+            (input logic [6:0] addr,
+             output logic [N-1:0] q);
+
+    logic [31:0] ROM [0:`ROM_SIZE-1] = <span id="code-output">'{
+        32'hb400001f
+    };</span>
+
+    always_comb begin
+        if (addr < `ROM_SIZE)
+            q = {{N-32{1'b0}}, ROM[addr]};
+        else
+            q = 0;
+    end
+endmodule
+</pre>
+            </div>
+        </main>
+    </body>
+</html>
