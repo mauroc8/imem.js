@@ -176,6 +176,10 @@ function parseLine(line: string, index: number): Program {
         throw `Instrucción MRS inválida en la línea ${index}: "${line}"`
     }
 
+    if (line === 'INVALID_INSTRUCTION') {
+        return [{ INVALID_INSTRUCTION: [] }]
+    }
+
     throw `Instrucción inválida en la línea ${index}: "${line}"`
 }
 
