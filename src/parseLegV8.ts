@@ -63,7 +63,7 @@ function parseLine(line: string, index: number): Program {
 
     // R-type
 
-    const rTypeRegExp = /^(ADD|SUB|AND|ORR)\s+(X\d{1,2}|XZR),\s+(X\d{1,2}|XZR),\s+(X\d{1,2}|XZR)/
+    const rTypeRegExp = /^(ADD|SUB|AND|ORR)\s+(X\d{1,2}|XZR),\s*(X\d{1,2}|XZR),\s*(X\d{1,2}|XZR)$/
 
     const rTypeMatch = line.match(rTypeRegExp)
 
@@ -93,7 +93,7 @@ function parseLine(line: string, index: number): Program {
 
     // LDUR/STUR
 
-    const dTypeRegex = /^(LDUR|STUR)\s+(X\d{1,2}|XZR),\s+\[\s+(X\d{1,2}|XZR),\s+#(\d+)\s+\]/
+    const dTypeRegex = /^(LDUR|STUR)\s+(X\d{1,2}|XZR),\s*\[\s*(X\d{1,2}|XZR),\s*#(\d+)\s*\]$/
 
     const dTypeMatch = line.match(dTypeRegex)
 
@@ -115,7 +115,7 @@ function parseLine(line: string, index: number): Program {
 
     // CBZ
 
-    const cbzRegex = /^CBZ\s+(X\d{1,2}|XZR),\s+(\w+)/
+    const cbzRegex = /^CBZ\s+(X\d{1,2}|XZR),\s*(\w+)$/
 
     const cbzMatch = line.match(cbzRegex)
 
@@ -141,7 +141,7 @@ function parseLine(line: string, index: number): Program {
 
     // BR
 
-    const brRegex = /^BR\s+(X\d{1,2}|XZR)/
+    const brRegex = /^BR\s+(X\d{1,2}|XZR)$/
 
     const brMatch = line.match(brRegex)
 
@@ -157,7 +157,7 @@ function parseLine(line: string, index: number): Program {
 
     // BR
 
-    const mrsRegExp = /^MRS\s+(X\d{1,2}|XZR),\s+(S2_0_C[012]_C0_0)/
+    const mrsRegExp = /^MRS\s+(X\d{1,2}|XZR),\s*(S2_0_C[012]_C0_0)$/
 
     const mrsMatch = line.match(mrsRegExp)
 
@@ -176,7 +176,7 @@ function parseLine(line: string, index: number): Program {
         throw `Instrucción MRS inválida en la línea ${index}: "${line}"`
     }
 
-    throw `Instrucción desconocida en la línea ${index}: "${line}"`
+    throw `Instrucción inválida en la línea ${index}: "${line}"`
 }
 
 function validateRegister(register: string): register is Register {
