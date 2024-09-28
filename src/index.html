@@ -9,7 +9,7 @@
     <body>
         <h1>imem.js</h1>
         <main>
-            <div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div>Código:</div>
                 <textarea
                     id="code-input"
@@ -18,14 +18,22 @@
                     rows="18"
                     spellcheck="false"
                 ></textarea>
-                <div>Vector de excepciones (opcional):</div>
-                <textarea
+                <details>
+                    <summary style="cursor: pointer;">Vector de excepciones (opcional):</summary>
+                    <textarea
                     id="isr-input"
                     placeholder=""
                     cols="50"
                     rows="8"
                     spellcheck="false"
-                ></textarea>
+                    ></textarea>
+                    <div>
+                        <small style="color: dimgray;">
+                            Podés escribir <code>INVALID_INSTRUCTION</code>
+                            para generar una instrucción inválida
+                        </small>
+                    </div>
+                </details>
             </div>
             <div>
                 <div style="display: flex">
@@ -53,12 +61,6 @@ module imem #(parameter N=32)
     end
 endmodule
 </pre>
-                <div>
-                    <small style="color: dimgray;">
-                        Nota: Podés escribir <code>INVALID_INSTRUCTION</code>
-                        para generar una instrucción inválida
-                    </small>
-                </div>
             </div>
         </main>
     </body>

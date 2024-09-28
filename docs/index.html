@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>imem.js</title><link rel="stylesheet" href="styles.591e47cf.css"><script src="src.ca8b2a21.js"></script></head><body> <h1>imem.js</h1> <main> <div> <div>Código:</div> <textarea id="code-input" placeholder="loop: CBZ XZR, loop" cols="50" rows="18" spellcheck="false"></textarea> <div>Vector de excepciones (opcional):</div> <textarea id="isr-input" placeholder="" cols="50" rows="8" spellcheck="false"></textarea> </div> <div> <div style="display:flex"> <span style="flex-grow:1"> Salida: </span> <button id="copy-output-button">Copiar</button> </div> <pre id="output">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>imem.js</title><link rel="stylesheet" href="styles.1e7da968.css"><script src="src.ca8b2a21.js"></script></head><body> <h1>imem.js</h1> <main> <div style="display:flex;flex-direction:column;gap:12px;"> <div>Código:</div> <textarea id="code-input" placeholder="loop: CBZ XZR, loop" cols="50" rows="18" spellcheck="false"></textarea> <details> <summary style="cursor:pointer;">Vector de excepciones (opcional):</summary> <textarea id="isr-input" placeholder="" cols="50" rows="8" spellcheck="false"></textarea> <div> <small style="color:#696969;"> Podés escribir <code>INVALID_INSTRUCTION</code> para generar una instrucción inválida </small> </div> </details> </div> <div> <div style="display:flex"> <span style="flex-grow:1"> Salida: </span> <button id="copy-output-button">Copiar</button> </div> <pre id="output">
 `define ROM_SIZE <span id="rom-size-output">1</span>
 
 module imem #(parameter N=32)
@@ -16,4 +16,4 @@ module imem #(parameter N=32)
             q = 0;
     end
 endmodule
-</pre> <div> <small style="color:#696969;"> Nota: Podés escribir <code>INVALID_INSTRUCTION</code> para generar una instrucción inválida </small> </div> </div> </main> </body></html>
+</pre> </div> </main> </body></html>

@@ -1,11 +1,24 @@
 
 html {
     font-family: sans-serif;
+    background-color: black;
+    color: white;
+}
+
+textarea {
+    background-color: #111;
+    color: white;
+    border: 0;
+}
+
+textarea:focus {
+    border: 0;
+    outline: 1px solid darkblue;
 }
 
 #rom-size-output,
 #code-output {
-    color: darkblue;
+    color: orange;
 }
 
 pre:has(#code-output) {
