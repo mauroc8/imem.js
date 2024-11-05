@@ -33,6 +33,11 @@ function initializeApp({
     copyOutputButton: HTMLButtonElement,
     output: Element,
 }) {
+    // --- persist input
+
+    persistInputValue('code-input', codeInput);
+    persistInputValue('isr-input', isrInput);
+
     // --- update output
 
     function updateOutput() {
@@ -48,43 +53,27 @@ function initializeApp({
     codeInput.addEventListener('input', updateOutputDebounced)
     isrInput.addEventListener('input', updateOutputDebounced)
 
-    // --- save/load code input
-
-    const loadedCodeInput = localStorage.getItem('code-input')
-
-    if (loadedCodeInput) {
-        codeInput.value = loadedCodeInput
-    }
-
-    function saveCodeInput() {
-        localStorage.setItem('code-input', codeInput.value)
-    }
-
-    const saveCodeInputDebounced = debounce(saveCodeInput, 800)
-
-    codeInput.addEventListener('input', saveCodeInputDebounced);
-
-    // --- save/load isr input
-
-    const loadedIsrInput = localStorage.getItem('isr-input')
-
-    if (loadedIsrInput) {
-        codeInput.value = loadedIsrInput
-    }
-
-    function saveIsrInput() {
-        localStorage.setItem('isr-input', codeInput.value)
-    }
-
-    const saveIsrInputDebounced = debounce(saveIsrInput, 800)
-
-    isrInput.addEventListener('input', saveIsrInputDebounced);
-
-    // --- copy output
+    // --- copy output button
 
     copyOutputButton.addEventListener('click', () => {
         navigator.clipboard.writeText(output.textContent || '')
     })
+}
+
+function persistInputValue(key: string, input: HTMLTextAreaElement) {
+    const loadedCodeInput = localStorage.getItem(key)
+
+    if (loadedCodeInput) {
+        input.value = loadedCodeInput
+    }
+
+    function saveInput() {
+        localStorage.setItem(key, input.value)
+    }
+
+    const saveInputDebounced = debounce(saveInput, 800)
+
+    input.addEventListener('input', saveInputDebounced)
 }
 
 function debounce(fn, ms) {
