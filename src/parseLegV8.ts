@@ -93,7 +93,7 @@ function parseLine(line: string, index: number): Program {
 
     // LDUR/STUR
 
-    const dTypeRegex = /^(LDUR|STUR)\s+(X\d{1,2}|XZR),\s*\[\s*(X\d{1,2}|XZR),\s*#(\d+)\s*\]$/
+    const dTypeRegex = /^(LDUR|STUR)\s+(X\d{1,2}|XZR),\s*\[\s*(X\d{1,2}|XZR),\s*#(-?\d+)\s*\]$/
 
     const dTypeMatch = line.match(dTypeRegex)
 
@@ -178,6 +178,12 @@ function parseLine(line: string, index: number): Program {
 
     if (line === 'INVALID_INSTRUCTION') {
         return [{ INVALID_INSTRUCTION: [] }]
+    }
+
+    // Comentarios
+
+    if (line.startsWith('//')) {
+        return []
     }
 
     throw `Instrucción inválida en la línea ${index}: "${line}"`
