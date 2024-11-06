@@ -42,7 +42,7 @@ function initializeApp({
 
     function updateOutput() {
         const { code, romSize } = parseLegV8(codeInput.value, isrInput.value);
-        romSizeOutput.textContent = String(romSize);
+        romSizeOutput.textContent = String(romSize - 1);
         codeOutput.textContent = code;
     }
 

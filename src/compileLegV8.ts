@@ -127,37 +127,6 @@ export type Register = 'X0' | 'X1' | 'X2' | 'X3' | 'X4' | 'X5' | 'X6' | 'X7' | '
     | 'X20' | 'X21' | 'X22' | 'X23' | 'X24' | 'X25' | 'X26' | 'X27' | 'X28' | 'X29'
     | 'X30' | 'XZR';
 
-const X0 = 'X0';
-const X1 = 'X1';
-const X2 = 'X2';
-const X3 = 'X3';
-const X4 = 'X4';
-const X5 = 'X5';
-const X6 = 'X6';
-const X7 = 'X7';
-const X8 = 'X8';
-const X9 = 'X9';
-const X10 = 'X10';
-const X11 = 'X11';
-const X12 = 'X12';
-const X13 = 'X13';
-const X14 = 'X14';
-const X15 = 'X15';
-const X16 = 'X16';
-const X17 = 'X17';
-const X18 = 'X18';
-const X19 = 'X19';
-const X20 = 'X20';
-const X21 = 'X21';
-const X22 = 'X22';
-const X23 = 'X23';
-const X24 = 'X24';
-const X25 = 'X25';
-const X26 = 'X26';
-const X27 = 'X27';
-const X28 = 'X28';
-const X29 = 'X29';
-const X30 = 'X30';
 const XZR = 'XZR';
 
 function registerToBinary(register: Register): BinaryNumber {
@@ -183,11 +152,11 @@ function registerToBinary(register: Register): BinaryNumber {
 
 // ---
 
-type SystemRegister = 'S2_0_C0_C0_0' | 'S2_0_C1_C0_0' | 'S2_0_C2_C0_0';
+type SystemRegister = ExceptionReturnRegister | ExceptionLinkRegister | ExceptionSyndromeRegister;
 
-const ExceptionReturnRegister = 'S2_0_C0_C0_0';
-const ExceptionLinkRegister = 'S2_0_C1_C0_0';
-const ExceptionSyndromeRegister = 'S2_0_C2_C0_0';
+type ExceptionReturnRegister = 'S2_0_C0_C0_0';
+type ExceptionLinkRegister = 'S2_0_C1_C0_0';
+type ExceptionSyndromeRegister = 'S2_0_C2_C0_0';
 
 function systemRegisterToBinary(systemRegister: SystemRegister): BinaryNumber {
     switch (systemRegister) {
@@ -211,8 +180,11 @@ export type Instruction =
     | { SUB: [Register, Register, Register] }
     | { AND: [Register, Register, Register] }
     | { ORR: [Register, Register, Register] }
+    | { ADDI: [Register, Register, number] }
+    | { SUBI: [Register, Register, number] }
     | { CBZ: [Register, string] }
     | { ERET: [] }
+    | { NOP: [] }
     | { MRS: [Register, SystemRegister] }
     | { BR: [Register] }
     | { INVALID_INSTRUCTION: [] }
@@ -257,6 +229,16 @@ function encodeInstructionToBinary(instruction: Instruction, instructionIndex: n
         );
     }
 
+    function iType(args: [Register, Register, number]): BinaryNumber {
+        const [rd, rn, aluImm] = args;
+
+        return b(
+            decimalToBinary(aluImm, 12),
+            registerToBinary(rn),
+            registerToBinary(rd)
+        );
+    }
+
     if ('ADD' in instruction) {
         const opCode = '100_0101_1000';
 
@@ -279,6 +261,18 @@ function encodeInstructionToBinary(instruction: Instruction, instructionIndex: n
         const opCode = '101_0101_0000';
 
         return b(opCode, rType(instruction.ORR));
+    }
+
+    if ('ADDI' in instruction) {
+        const opCode = '100_1000_100';
+
+        return b(opCode, iType(instruction.ADDI));
+    }
+
+    if ('SUBI' in instruction) {
+        const opCode = '111_1000_100';
+
+        return b(opCode, iType(instruction.SUBI));
     }
 
     if ('CBZ' in instruction) {
@@ -310,6 +304,10 @@ function encodeInstructionToBinary(instruction: Instruction, instructionIndex: n
             '11111',
             '00000'
         );
+    }
+
+    if ('NOP' in instruction) {
+       return encodeInstructionToBinary({ ADD: [XZR, XZR, XZR] }, instructionIndex, labelIndex);
     }
 
     if ('MRS' in instruction) {
@@ -353,11 +351,98 @@ function encodeInstruction(instruction: Instruction, instructionIndex: number, l
     return binaryToHex(encodeInstructionToBinary(instruction, instructionIndex, labelIndex));
 }
 
+function instructionSource(instruction: Instruction): string {
+    if ('STUR' in instruction) {
+        const [rt, rn, dtAddress] = instruction.STUR;
+
+        const opCode = '111_1100_0000';
+
+        return `STUR ${rt}, [${rn}, #${dtAddress}]`;
+    }
+
+    if ('LDUR' in instruction) {
+        const [rt, rn, dtAddress] = instruction.LDUR;
+
+        const opCode = '111_1100_0010';
+
+        return `LDUR ${rt}, [${rn}, #${dtAddress}]`;
+
+    }
+
+    function rType(args: [Register, Register, Register]): string {
+        const [rd, rn, rm] = args;
+
+        return `${rd}, ${rn}, ${rm}`;
+    }
+
+    function iType(args: [Register, Register, number]): string {
+        const [rd, rn, aluImm] = args;
+
+        return `${rd}, ${rn}, #${aluImm}`;
+    }
+
+    if ('ADD' in instruction) {
+        return `ADD ${rType(instruction.ADD)}`;
+    }
+
+    if ('SUB' in instruction) {
+        return `SUB ${rType(instruction.SUB)}`;
+    }
+
+    if ('AND' in instruction) {
+        return `AND ${rType(instruction.AND)}`;
+    }
+
+    if ('ORR' in instruction) {
+        return `ORR ${rType(instruction.ORR)}`;
+    }
+
+    if ('ADDI' in instruction) {
+        return `ADDI ${iType(instruction.ADDI)}`;
+    }
+
+    if ('SUBI' in instruction) {
+        return `SUBI ${iType(instruction.SUBI)}`;
+    }
+
+    if ('CBZ' in instruction) {
+        const [rt, label] = instruction.CBZ;
+
+        return `CBZ ${rt}, ${label}`;
+    }
+
+    if ('ERET' in instruction) {
+        return `ERET`;
+    }
+
+    if ('NOP' in instruction) {
+        return `NOP`;
+    }
+
+    if ('MRS' in instruction) {
+        const [rt, systemRegister] = instruction.MRS;
+
+        return `MRS ${rt}, ${systemRegister}`;
+    }
+
+    if ('BR' in instruction) {
+        const [rn] = instruction.BR;
+
+        return `BR ${rn}`;
+    }
+
+    if ('INVALID_INSTRUCTION' in instruction) {
+        return 'INVALID_INSTRUCTION';
+    }
+
+    return `???`;
+}
+
 // ---
 
 export type Program = (Instruction | string)[];
 
-function encode(...originalProgram: Program): string[] {
+function encode(...originalProgram: Program): { hex: string, source: string }[] {
     const labelIndex: Record<string, number> = {};
 
     // a copy to avoid mutating the original program
@@ -379,15 +464,17 @@ function encode(...originalProgram: Program): string[] {
     }
 
     return (program as Instruction[])
-        .map((instruction, index) => encodeInstruction(instruction, index, labelIndex))
-        .map(instruction => instruction.join(''));
+        .map((instruction, index) => ({
+            hex: encodeInstruction(instruction, index, labelIndex).join(''),
+            source: instructionSource(instruction),
+        }));
 }
 
-export function compileLegV8(...program: Program): string[] {
-    return encode(...program).map(hex => `32'h${hex}`);
+export function compileLegV8(...program: Program): { hex: string, source: string }[] {
+    return encode(...program).map(instruction => ({ hex: `32'h${instruction.hex}`, source: instruction.source }));
 }
 
-const NOP: Instruction = { ADD: [XZR, XZR, XZR] };
+const NOP: Instruction = { NOP: [] };
 
 function repeat<A>(value: A, n: number): A[] {
     if (n <= 0) {
@@ -397,7 +484,7 @@ function repeat<A>(value: A, n: number): A[] {
     }
 }
 
-export function compileLegV8WithIRS(program: Program, exceptionVector: Program): string[] {
+export function compileLegV8WithIRS(program: Program, exceptionVector: Program): { hex: string, source: string }[] {
     const instructionCount = program.reduce(
         (sum, instructionOrLabel) => typeof instructionOrLabel !== 'string'
             ? sum + 1

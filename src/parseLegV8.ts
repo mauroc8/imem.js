@@ -13,17 +13,19 @@ export function parseLegV8(code: string, isr: string): { code: string, romSize: 
                 ? compileLegV8WithIRS(codeInstructions, isrLines.flatMap(parseLine))
                 : compileLegV8(...codeInstructions);
 
+        const ident = '           ';
+
         return {
             code: `'{
-      ${compiledCode.join(',\n      ')}
-   };`,
+${ident}${compiledCode.map(instr => `// ${instr.source}\n${ident}${instr.hex}`).join(`,\n${ident}`)}
+        };`,
             romSize: compiledCode.length,
         }
     } catch (error) {
         if (typeof error === 'string') {
             return {
                 code: `
-      ${error}
+           ${error}
 `, romSize: 0
             }
         } else {
@@ -91,6 +93,30 @@ function parseLine(line: string, index: number): Program {
         throw `Instrucción tipo R inválida en la línea ${index}: "${line}"`
     }
 
+    // I-type
+
+    const iTypeRegExp = /^(ADDI|SUBI)\s+(X\d{1,2}|XZR),\s*(X\d{1,2}|XZR),\s*#(\d+)$/
+
+    const iTypeMatch = line.match(iTypeRegExp)
+
+    if (iTypeMatch) {
+        const [_, op, rd, rn, aluImm] = iTypeMatch
+
+        if (validateRegister(rd)
+            && validateRegister(rn)) {
+            switch (op) {
+                case 'ADDI':
+                    return [{ ADDI: [rd, rn, Number(aluImm)] }]
+
+                case 'SUBI':
+                    return [{ SUBI: [rd, rn, Number(aluImm)] }]
+            }
+        }
+
+        throw `Instrucción tipo I inválida en la línea ${index}: "${line}"`
+    }
+
+
     // LDUR/STUR
 
     const dTypeRegex = /^(LDUR|STUR)\s+(X\d{1,2}|XZR),\s*\[\s*(X\d{1,2}|XZR),\s*#(-?\d+)\s*\]$/
@@ -131,12 +157,22 @@ function parseLine(line: string, index: number): Program {
 
     // ERET
 
-    const eretRegex = /^ERET/
+    const eretRegex = /^ERET$/
 
     const eretMatch = line.match(eretRegex)
 
     if (eretMatch) {
         return [{ ERET: [] }]
+    }
+
+    // NOP
+
+    const nopRegex = /^NOP$/
+
+    const nopMatch = line.match(nopRegex)
+
+    if (nopMatch) {
+        return [{ NOP: [] }]
     }
 
     // BR
