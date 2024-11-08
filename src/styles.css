@@ -17,13 +17,9 @@ textarea:focus {
 }
 
 #rom-size-output,
-#code-output {
+#compiled-code-output,
+#code-source-output {
     color: orange;
-}
-
-pre:has(#code-output) {
-    border: 1px solid lightgray;
-    padding: 24px;
 }
 
 main {
