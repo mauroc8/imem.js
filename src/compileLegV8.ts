@@ -37,7 +37,7 @@ function decimalToBinary(number: number, amountOfBits: number): BinaryNumber {
 
 // ---
 
-type HexDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+type HexDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f';
 
 function hexDigitToBinary(digit: HexDigit): BinaryNumber {
     switch (digit) {
@@ -51,12 +51,12 @@ function hexDigitToBinary(digit: HexDigit): BinaryNumber {
         case '7': return b('0111');
         case '8': return b('1000');
         case '9': return b('1001');
-        case 'A': return b('1010');
-        case 'B': return b('1011');
-        case 'C': return b('1100');
-        case 'D': return b('1101');
-        case 'E': return b('1110');
-        case 'F': return b('1111');
+        case 'a': return b('1010');
+        case 'b': return b('1011');
+        case 'c': return b('1100');
+        case 'd': return b('1101');
+        case 'e': return b('1110');
+        case 'f': return b('1111');
     }
 }
 
@@ -76,12 +76,12 @@ function nibbleToHex(nibble: Nibble): HexDigit {
         case '0111': return '7';
         case '1000': return '8';
         case '1001': return '9';
-        case '1010': return 'A';
-        case '1011': return 'B';
-        case '1100': return 'C';
-        case '1101': return 'D';
-        case '1110': return 'E';
-        case '1111': return 'F';
+        case '1010': return 'a';
+        case '1011': return 'b';
+        case '1100': return 'c';
+        case '1101': return 'd';
+        case '1110': return 'e';
+        case '1111': return 'f';
     }
 }
 
@@ -90,11 +90,11 @@ function nibbleToHex(nibble: Nibble): HexDigit {
 type HexNumber = HexDigit[];
 
 function h(str: string): HexNumber {
-    if (/[^0123456789ABCDEF_]/.test(str)) {
+    if (/[^0123456789ABCDEF_]/i.test(str)) {
         throw `El número ${str} debería ser un número hexadecimal`;
     }
 
-    return str.replace(/_/g, '').split('') as HexNumber;
+    return str.replace(/_/g, '').toLowerCase().split('') as HexNumber;
 }
 
 
@@ -270,7 +270,7 @@ function encodeInstructionToBinary(instruction: Instruction, instructionIndex: n
     }
 
     if ('SUBI' in instruction) {
-        const opCode = '111_1000_100';
+        const opCode = '110_1000_100';
 
         return b(opCode, iType(instruction.SUBI));
     }

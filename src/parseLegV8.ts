@@ -101,7 +101,7 @@ function parseLine(line: string, index: number): Program {
 
     // I-type
 
-    const iTypeRegExp = /^(ADDI|SUBI)\s+(X\d{1,2}|XZR),\s*(X\d{1,2}|XZR),\s*#(\d+)$/
+    const iTypeRegExp = /^(ADD|SUB)\s+(X\d{1,2}|XZR),\s*(X\d{1,2}|XZR),\s*#(\d+)$/
 
     const iTypeMatch = line.match(iTypeRegExp)
 
@@ -111,10 +111,10 @@ function parseLine(line: string, index: number): Program {
         if (validateRegister(rd)
             && validateRegister(rn)) {
             switch (op) {
-                case 'ADDI':
+                case 'ADD':
                     return [{ ADDI: [rd, rn, Number(aluImm)] }]
 
-                case 'SUBI':
+                case 'SUB':
                     return [{ SUBI: [rd, rn, Number(aluImm)] }]
             }
         }
