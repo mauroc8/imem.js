@@ -442,7 +442,7 @@ function instructionSource(instruction: Instruction): string {
 
 export type Program = (Instruction | string)[];
 
-function encode(...originalProgram: Program): { hex: string, source: string }[] {
+function encode(...originalProgram: Program): string[] {
     const labelIndex: Record<string, number> = {};
 
     // a copy to avoid mutating the original program
@@ -464,14 +464,11 @@ function encode(...originalProgram: Program): { hex: string, source: string }[] 
     }
 
     return (program as Instruction[])
-        .map((instruction, index) => ({
-            hex: encodeInstruction(instruction, index, labelIndex).join(''),
-            source: instructionSource(instruction),
-        }));
+        .map((instruction, index) => encodeInstruction(instruction, index, labelIndex).join(''));
 }
 
-export function compileLegV8(...program: Program): { hex: string, source: string }[] {
-    return encode(...program).map(instruction => ({ hex: `32'h${instruction.hex}`, source: instruction.source }));
+export function compileLegV8(...program: Program): string[] {
+    return encode(...program).map(instruction => `32'h${instruction}`);
 }
 
 const NOP: Instruction = { NOP: [] };
@@ -484,7 +481,7 @@ function repeat<A>(value: A, n: number): A[] {
     }
 }
 
-export function compileLegV8WithIRS(program: Program, exceptionVector: Program): { hex: string, source: string }[] {
+export function compileLegV8WithIRS(program: Program, exceptionVector: Program): string[] {
     const instructionCount = program.reduce(
         (sum, instructionOrLabel) => typeof instructionOrLabel !== 'string'
             ? sum + 1

@@ -17,7 +17,7 @@ export function parseLegV8(code: string, isr: string): { code: string, romSize: 
 
         return {
             code: `'{
-${ident}${compiledCode.map(instr => `// ${instr.source}\n${ident}${instr.hex}`).join(`,\n${ident}`)}
+${ident}${compiledCode.join(`,\n${ident}`)}
         };`,
             romSize: compiledCode.length,
         }
@@ -39,6 +39,12 @@ function parseLine(line: string, index: number): Program {
 
     if (line !== line.trim()) {
         return parseLine(line.trim(), index)
+    }
+
+    // Comentarios
+
+    if (line.includes('//')) {
+        return parseLine(line.split('//')[0], index)
     }
 
     // Empty lines
@@ -214,12 +220,6 @@ function parseLine(line: string, index: number): Program {
 
     if (line === 'INVALID_INSTRUCTION') {
         return [{ INVALID_INSTRUCTION: [] }]
-    }
-
-    // Comentarios
-
-    if (line.startsWith('//')) {
-        return []
     }
 
     throw `Instrucción inválida en la línea ${index}: "${line}"`
